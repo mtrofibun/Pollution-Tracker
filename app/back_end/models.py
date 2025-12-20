@@ -18,9 +18,11 @@ class SensorReadings(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     sensor_id = Column(String, index=True)
-    pm25 = Column(float)
-    pm10 = Column(float)
-    value = Column(float)
+    value = Column(String)
+    type = Column(String) # pm10 or pm25
+    colorTemp = Column(Integer)
+    flickerRate = Column(Integer)
+    moonVisibility = Column(float) # 0 to 1
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
     readings = relationship("SensorReading",back_populates="sensor")
 
@@ -30,12 +32,10 @@ class Alert(Base):
     id = Column(Integer, primary_key=True)
     sensor_id = Column(Integer, ForeignKey("sensors.id"), nullable=False)
     reading_id = Column(Integer, ForeignKey("sensor_readings.id"), nullable=True)
-
-    type = Column(String, nullable=False)
-    severity = Column(String, nullable=False)
-    message = Column(String, nullable=False)
-
-    acknowledged = Column(Boolean, default=False)
+    sensorType = Column(String,nullable=False)
+    severity = Column(Integer, nullable=False)
+    unit = Column(String)
+    status = Column(String,nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     sensor = relationship("Sensor")

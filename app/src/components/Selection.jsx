@@ -15,6 +15,7 @@ const [newSensor, setNewSensor] = useState ({
     type : '',
     date : ''
 })
+const [addNewSensor, setAddNewSensor] = useState(false);
 
 const createSensor = () => {
     if(newSensor.name && newSensor.location && newSensor.type){
@@ -25,29 +26,55 @@ const createSensor = () => {
             date : newSensor.date
         })
     }
+    console.log(newSensor)
+    setAddNewSensor(false);
+    setNewSensor({ name : '',
+    location : '',
+    type : '',
+    date : ''});
+   
 }
 
 /* inputs */
-<div class = "main-form">
+return(
+<>
+<button onClick = {()=> setAddNewSensor(!addNewSensor)}>Add Sensor</button>
+
+
+{addNewSensor && (<div class = "main-form">
     <h3>New Sensor</h3>
     <div class = "form">
     <label>Name</label>
     <input 
     type = "text"
+    placeholder = "Sensor 1"
     value = {newSensor.name}
-    onChange = {(e) => setNewSensor({...newSensor, date : e.target.value})}
+    onChange = {(e) => setNewSensor({...newSensor, name : e.target.value})}
     />
     </div>
     <div class = "form">
         <h3>Location</h3>
-        <selection>
+        <select onChange = {(e) => setNewSensor({...newSensor, location : e.target.value})}>
             <option>Park</option>
             <option>City</option>
             <option>Forest</option>
             <option>Neighborhood</option>
-        </selection>
+        </select>
     </div>
-</div>
+    <div class = "form">
+        <h3>Type</h3>
+        <select onChange = {(e) => setNewSensor({...newSensor, type : e.target.value})}>
+            <option>Temperature</option>
+            <option>PM10</option>
+            <option>PM2.5</option>
+            <option>Neighborhood</option>
+        </select>
+    </div>
+    <button onClick = {() => setAddNewSensor(createSensor)}>Add Selection</button>
+    <button onClick = {() => setAddNewSensor(false)}>Exit</button>
+</div>)}
 
+</>
+);
 
 }

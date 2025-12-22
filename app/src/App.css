@@ -37,6 +37,19 @@
   padding: 2em;
 }
 
+.main-form{
+  display:grid;
+ position:fixed;
+  border-radius:10px;
+  width: 50%;
+  height: 50%;
+  background: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+ background:rgba(109, 109, 134, 0.189);
+}
+
 .read-the-docs {
   color: #888;
 }

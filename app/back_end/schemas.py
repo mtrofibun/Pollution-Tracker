@@ -18,3 +18,4 @@ class AlertCreate(BaseModel):
     severity : int
     unit : str
     status : str
+    value : str

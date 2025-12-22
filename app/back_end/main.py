@@ -22,7 +22,9 @@ def createAlert(alert : AlertCreate, db : Session = Depends(get_db)):
         sensorType = alert.sensorType,
         severity = alert.severity,
         unit = alert.unit,
+        value = alert.value,
         status = "Not Fixed"
+        
     )
     db.add(newAlert)
     db.commit()
@@ -54,21 +56,26 @@ def createReading(reading : SensorReadingCreate, db: Session = Depends(get_db)):
 @app.get("/sensorData")
 def getReading(background_tasks: BackgroundTasks, db: Session = Depends(get_db),):
     logs = db.query(SensorReadings).all()
-    thresholdCount = {
+    thresholdCritical = {
         "temp" : 90,
         "RGB" : 30, # 30% blue light
         "lux" : 1, # lux
         "SQM" : 18, # mag/arcsec^2
-        "PM10" : ,#ug/m^3
-        "PM25" : , #ug/m^3
+        "PM10" : 155.5,#ug/m^3
+        "PM25" : 55.5, #ug/m^3
     
     }
-    templogs = db.query(SensorReadings).filter(SensorReadings.type == "temp")
-    for logs in templogs:
-        if logs.value > thresholdCount["temp"]:
-            createAlert()
+    PM25logs = db.query(SensorReadings).filter(SensorReadings.type == "PM25")
+    for logs in PM25logs:
+        if logs.value > thresholdCritical["PM25"]:
+            alertData = {
+                "sensorType" : "PM25",
+                "severity" : "critical",
+                "unit" : "ug/m^3",
+                "type" : logs.value
+            }
+            createAlert(alertData,db)
     
-    for log in logs:
 
 
 

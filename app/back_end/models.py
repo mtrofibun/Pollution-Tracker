@@ -36,6 +36,7 @@ class Alert(Base):
     severity = Column(Integer, nullable=False)
     unit = Column(String)
     status = Column(String,nullable=False)
+    value = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     sensor = relationship("Sensor")

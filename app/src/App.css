@@ -2,54 +2,64 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
+  display:grid;
+}
+label{
+  
   text-align: center;
+  margin:10px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: rgba(31, 31, 59, 0.87);
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.form{
+  margin:5px;
+  
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.form-gap{
+  
+  border-radius: 25px;
+ border-color:rgba(31, 31, 59, 0.87);
+ border-width:1px;
+ border-style:solid;
+ padding:20px;
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.button-gap{
+margin-top:15px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
+
 
 .card {
   padding: 2em;
 }
 
 .main-form{
+ 
   display:grid;
  position:fixed;
   border-radius:10px;
-  width: 50%;
-  height: 50%;
-  background: rgba(0, 0, 0, 0.8);
+   min-width: 50%;
+   padding:10px;
+    min-height:50%;
+  top:23%;
+  right:23%;
+ 
   justify-content: center;
   align-items: center;
   z-index: 1000;
- background:rgba(109, 109, 134, 0.189);
+ background:#6C91BF;
+}
+button{
+  background-color:#29385cde;
+  color:rgb(171, 199, 239);
+  
 }
 
+.sensor-display{
+display:flex;
+}
 .read-the-docs {
   color: #888;
 }

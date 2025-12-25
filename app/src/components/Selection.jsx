@@ -40,24 +40,26 @@ const createSensor = () => {
 /* inputs */
 return(
 <>
-<button onClick = {()=> setAddNewSensor(!addNewSensor)}>Add Sensor</button>
+<button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white" onClick = {()=> setAddNewSensor(!addNewSensor)}>Add Sensor</button>
 
 
-{addNewSensor && (<div class = "main-form">
-    <div class = "form-gap">
-    <h3>New Sensor</h3>
-    <div class = "form">
+{addNewSensor && (<div class="absolute inset-0 flex items-center justify-center">
+  <div class="w-96 h-83 bg-[#171d25] border-4 border-[#303641] rounded-sm p-3 ">
+    <div class = "row">
+    <h3 class = "border-b-2 border-[#303641] p-2 rounded-sm  text-zinc-400 text-center font-bold text-xl">New Sensor</h3>
+    <div class = "p-3 text-zinc-400">
     <label>Name</label>
-    <input 
+    <input class = "bg-[#303641] p-2 rounded-sm text-[#67707b]" 
     type = "text"
     placeholder = "Sensor 1"
     value = {newSensor.name}
     onChange = {(e) => setNewSensor({...newSensor, name : e.target.value})}
     />
     </div>
-    <div class = "form">
+    <div class = "text-zinc-400 p-3 ">
         <label>Location</label>
-        <select value = {newSensor.location}
+        <select class = "bg-[#303641] p-2 rounded-sm text-[#67707b]" 
+         value = {newSensor.location}
         onChange = {(e) => setNewSensor({...newSensor, location : e.target.value})}>
             <option>Park</option>
             <option>City</option>
@@ -65,9 +67,9 @@ return(
             <option>Neighborhood</option>
         </select>
     </div>
-    <div class = "form">
+    <div class = "text-zinc-400 p-3">
         <label>Type</label>
-        <select value = {newSensor.attr}
+        <select class = "bg-[#303641] p-2 rounded-sm text-[#67707b]" value = {newSensor.attr}
          onChange = {(e) => setNewSensor({...newSensor, attr : e.target.value} )}>
             <option>Temperature</option>
             <option>PM10</option>
@@ -75,19 +77,27 @@ return(
             <option>Lux</option>
         </select>
     </div>
-   <button class = "button-gap" onClick={() => {
+    <div class = "text-center"> 
+   <button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white mr-9 mt-5" onClick={() => {
   createSensor();
   setAddNewSensor(false);}}>Add Selection</button>
-    <button class = "button-gap" onClick = {() => setAddNewSensor(false)}>Exit</button>
-</div></div>)}
-<div class = "sensor-display">
+    <button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white" onClick = {() => setAddNewSensor(false)}>Exit</button>
+</div>
+</div>
+</div>
+</div>)}
+<div class = "row-16">
+    <div class = "col">
       {sensors.map(sensor => (
+        <div class = "bg-[#171d25] border-4 border-[#303641] rounded-sm p-3">
         <div key={sensor.id}>
-            <h2>{sensor.name}</h2>
+            <h3  class = "border-b-2 border-[#303641] p-2 rounded-sm  text-zinc-400 text-center font-bold text-xl">{sensor.name}</h3>
             <p>Location : {sensor.location}</p>
             <p>Type : {sensor.attr}</p>
         </div>
+        </div>
       ))}
+      </div>
     </div>
 </>
 );

@@ -1,6 +1,5 @@
 
 import React,{ useState } from 'react';
-
 export default function Selection({sensors, onAddSelection}){
 /* allow users to create their own sensors here
 input box 1 for name
@@ -12,36 +11,53 @@ selection box for type // temp, pollution, lux, color
 const [newSensor, setNewSensor] = useState ({
     name : 'Sensor 1',
     location : 'Park',
-    attr : 'Temperature',
+    type : 'Temperature',
 })
 const [addNewSensor, setAddNewSensor] = useState(false);
 
 
-const createSensor = () => {
-     const time = new Date();
-     console.log(time);
-     console.log('newSensor:', newSensor); 
-    if(newSensor.name && newSensor.location && newSensor.attr){
-        onAddSelection({
-            name: newSensor.name,
-            location: newSensor.location,
-            attr: newSensor.attr,
-            date: time,
-        });
+const createSensor = async () => {
+  console.log('newSensor:', newSensor); 
+  
+  const entry = {
+    name: newSensor.name,
+    location: newSensor.location,
+    type: newSensor.type,
+  }
+  
+  if(newSensor.name && newSensor.location && newSensor.type){
+    onAddSelection(entry);
+    
+    try {
+      const response = await fetch('/sensors', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      });
+       if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Sensor created:', data);
+    } catch (error) {
+      console.error('Error creating sensor:', error);
     }
-    console.log(newSensor)
-    setAddNewSensor(false);
-    setNewSensor({  name : 'Sensor 1',
-    location : 'Park',
-    attr : 'Temperature',});
-   
+  }
+  
+  setAddNewSensor(false);
+  setNewSensor({
+    name: 'Sensor 1',
+    location: 'Park',
+    type: 'Temperature',
+  });
 }
 
-/* inputs */
 return(
 <>
+<div class = "text-center">
 <button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white" onClick = {()=> setAddNewSensor(!addNewSensor)}>Add Sensor</button>
-
+</div>
 
 {addNewSensor && (<div class="absolute inset-0 flex items-center justify-center">
   <div class="w-96 h-83 bg-[#171d25] border-4 border-[#303641] rounded-sm p-3 ">
@@ -69,8 +85,8 @@ return(
     </div>
     <div class = "text-zinc-400 p-3">
         <label>Type</label>
-        <select class = "bg-[#303641] p-2 rounded-sm text-[#67707b]" value = {newSensor.attr}
-         onChange = {(e) => setNewSensor({...newSensor, attr : e.target.value} )}>
+        <select class = "bg-[#303641] p-2 rounded-sm text-[#67707b]" value = {newSensor.type}
+         onChange = {(e) => setNewSensor({...newSensor, type : e.target.value} )}>
             <option>Temperature</option>
             <option>PM10</option>
             <option>PM2.5</option>
@@ -86,19 +102,17 @@ return(
 </div>
 </div>
 </div>)}
-<div class = "row-16">
-    <div class = "col">
-      {sensors.map(sensor => (
-        <div class = "bg-[#171d25] border-4 border-[#303641] rounded-sm p-3">
-        <div key={sensor.id}>
-            <h3  class = "border-b-2 border-[#303641] p-2 rounded-sm  text-zinc-400 text-center font-bold text-xl">{sensor.name}</h3>
-            <p>Location : {sensor.location}</p>
-            <p>Type : {sensor.attr}</p>
-        </div>
-        </div>
-      ))}
-      </div>
+<div className="flex flex-wrap gap-4">
+  {sensors.map(sensor => (
+    <div key={sensor.id} className="bg-[#171d25] border-4 border-[#303641] rounded-sm p-3">
+      <h3 className="border-b-2 border-[#303641] p-2 rounded-sm text-zinc-400 text-center w-64 font-bold text-xl">
+        {sensor.name}
+      </h3>
+      <p>Location: {sensor.location}</p>
+      <p>Type: {sensor.type}</p>
     </div>
+  ))}
+</div>
 </>
 );
 

@@ -1,11 +1,8 @@
 
 import React,{ useState } from 'react';
 export default function Selection({sensors, onAddSelection}){
-/* allow users to create their own sensors here
-input box 1 for name
-selection box for location
-selection box for type // temp, pollution, lux, color
-
+/* TODO: create delete button
+figure out how to remove in frontend and from database
 */
 
 const [newSensor, setNewSensor] = useState ({
@@ -91,6 +88,8 @@ return(
             <option>PM10</option>
             <option>PM2.5</option>
             <option>Lux</option>
+            <option>RGB</option>
+            <option>SQM</option>
         </select>
     </div>
     <div class = "text-center"> 

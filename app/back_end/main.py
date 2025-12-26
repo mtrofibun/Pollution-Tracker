@@ -14,7 +14,7 @@ poorPM10 = 25.0
 criticalPM10 = 54.0
 
 payload = {
-    #randomize data here 
+    #randomize data here i wanted to maybe use aws for this but we will see :3
 }
 
 def createAlert(alert : AlertCreate, db : Session = Depends(get_db)):
@@ -22,7 +22,7 @@ def createAlert(alert : AlertCreate, db : Session = Depends(get_db)):
         sensorType = alert.sensorType,
         severity = alert.severity,
         unit = alert.unit,
-        value = alert.value,
+        selfId = alert.selfId,
         status = "Not Fixed"
         
     )
@@ -54,27 +54,47 @@ def createReading(reading : SensorReadingCreate, db: Session = Depends(get_db)):
     pass
 
 @app.get("/sensorData")
-def getReading(background_tasks: BackgroundTasks, db: Session = Depends(get_db),):
+def getReading(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    counter = 0
     logs = db.query(SensorReadings).all()
+    sendJson = {}
     thresholdCritical = {
-        "temp" : 90,
-        "RGB" : 30, # 30% blue light
-        "lux" : 1, # lux
-        "SQM" : 18, # mag/arcsec^2
-        "PM10" : 155.5,#ug/m^3
-        "PM25" : 55.5, #ug/m^3
+        "temp" : 90, # // value, color temp
+        "RGB" : 30, # 30% blue light // flicker rate, color temp, moon visbility
+        "lux" : 1, # lux // moonvisbility, value
+        "SQM" : 18, # mag/arcsec^2 // moonvisbility, value
+        "PM10" : 155.5,#ug/m^3 // value moon visbility
+        "PM25" : 55.5, #ug/m^3 // value moon visbility
     
     }
-    PM25logs = db.query(SensorReadings).filter(SensorReadings.type == "PM25")
+    PM25logs = db.query(SensorReadings).filter(SensorReadings.type == "PM25").first()
+    PM10logs = db.query(SensorReadings).filter(SensorReadings.type == "PM10").first()
+    Templogs = db.query(SensorReadings).filter(SensorReadings.type == "Temperature").first()
+    Luxlogs = db.query(SensorReadings).filter(SensorReadings.type == "Lux").first()
+    RGBlogs = db.query(SensorReadings).filter(SensorReadings.type == "RGB").first()
+    
     for logs in PM25logs:
         if logs.value > thresholdCritical["PM25"]:
-            alertData = {
-                "sensorType" : "PM25",
+            sensor = db.query(Sensors).filter(Sensors.id == logs.sensor_id)
+            alertDataTable = {
                 "severity" : "critical",
                 "unit" : "ug/m^3",
-                "type" : logs.value
+                "selfId" : f"{counter}PM25"
             }
-            createAlert(alertData,db)
+            jsonAlert = {
+                "id" : f"{counter}PM25",
+                "name" : sensor.name,
+                "type" : sensor.type,
+                "location" : sensor.location,
+                "unit" : "µg/m³",
+                "value" : logs.value,
+                "color type" : "N/A",
+                "flicker rate" : "N/A",
+                "moon visiblity" : logs.moonVisibility,
+            }
+            sendJson[counter] = jsonAlert
+            counter += 1
+            createAlert(alertDataTable,db)
     
 
 
@@ -86,7 +106,7 @@ def fixedAlert(log_id : str, db: Session = Depends(get_db)):
     db.commit()
     db.close()
 
-# gets all ids to post
+# gets all ids to post // maybe we will need this idk
 @app.get("/alert")
 def getAlert(db : Session = Depends(get_db)):
     alerts = db.query(Alert).all()

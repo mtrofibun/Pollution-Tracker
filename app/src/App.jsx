@@ -1,5 +1,6 @@
 import './App.css'
 import Selection from './components/Selection';
+import Alerts from "./components/Alerts";
 import React, { useState } from 'react';
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
       </ul>
     </div>
     {activeTab === 'selection' && <Selection sensors={sensors} onAddSelection={handleAddSelection} />}
+    {activeTab === 'simulation' && <Alerts/>}
   </>
 )
 }

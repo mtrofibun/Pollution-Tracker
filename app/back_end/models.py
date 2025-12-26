@@ -11,20 +11,22 @@ class Sensors(Base):
     type = Column(String)
     location = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    sensor = relationship("sensor",back_populates="readings")
-
+    
+    readings = relationship("SensorReading", back_populates="sensor")
+    alerts = relationship("Alert", back_populates="sensor")
 class SensorReadings(Base):
     __tablename__ = "sensor_readings"
 
     id = Column(Integer, primary_key=True, index=True)
     sensor_id = Column(String, index=True)
     value = Column(String)
-    type = Column(String) # pm10 or pm25
     colorTemp = Column(Integer)
     flickerRate = Column(Integer)
     moonVisibility = Column(float) # 0 to 1
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
-    readings = relationship("SensorReading",back_populates="sensor")
+    sensor = relationship("Sensor", back_populates="readings")
+    alerts = relationship("Alert", back_populates="reading")
+
 
 class Alert(Base):
     __tablename__ = "alerts"
@@ -32,11 +34,10 @@ class Alert(Base):
     id = Column(Integer, primary_key=True)
     sensor_id = Column(Integer, ForeignKey("sensors.id"), nullable=False)
     reading_id = Column(Integer, ForeignKey("sensor_readings.id"), nullable=True)
-    sensorType = Column(String,nullable=False)
     severity = Column(Integer, nullable=False)
     unit = Column(String)
     status = Column(String,nullable=False)
-    value = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    sensor = relationship("Sensor")
+    sensor = relationship("Sensor", back_populates="alerts")
+    reading = relationship("SensorReading", back_populates="alerts")

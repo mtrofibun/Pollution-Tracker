@@ -37,7 +37,7 @@ def reading_from_root():
     return {"Testing"}
 
 @app.post("/sensors")
-def addSensor(sensor : SensorCreate, db: Session = Depends(get_db)):
+async def addSensor(sensor : SensorCreate, db: Session = Depends(get_db)):
     newSensor = Sensors(
         name = sensor.name,
         location = sensor.location,
@@ -49,12 +49,8 @@ def addSensor(sensor : SensorCreate, db: Session = Depends(get_db)):
     db.refresh(newSensor)
     return newSensor
 
-@app.post("/sensorData")
-def createReading(reading : SensorReadingCreate, db: Session = Depends(get_db)):
-    pass
-
 @app.get("/sensorData")
-def getReading(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+async def getReading(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     counter = 0
     logs = db.query(SensorReadings).all()
     sendJson = {}
@@ -100,11 +96,42 @@ def getReading(background_tasks: BackgroundTasks, db: Session = Depends(get_db))
 
 
 @app.get("/fixedAlert/{id}")
-def fixedAlert(log_id : str, db: Session = Depends(get_db)):
+async def fixedAlert(log_id : str, db: Session = Depends(get_db)):
     alert = db.query(Alert).filter(Alert.id == log_id).first()
     alert.status == "fixed"
     db.commit()
     db.close()
+
+@app.delete("/resetDatabase")
+async def reset(db: Session = Depends(get_db)):
+    database = db.query(Sensors).all()
+    db.delete(database)
+    db.commit()
+    return "Sensors have reset"
+
+@app.delete("/deleteSensor/{log_id}")
+async def deleteSensor(log_id : str, db: Session = Depends(get_db)):
+    sensor = db.query(Sensors).filter(Sensors.selfId == log_id)
+    db.delete(sensor)
+    db.commit()
+    return "Successfully Deleted"
+
+@app.get("/testingdata")
+async def testing(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    counter = 0
+    JsonData = {}
+    logs = db.query(Sensors).all()
+    for log in logs:
+        data = {
+            "name" : log.name,
+            "type" : log.type,
+            "location" : log.location
+
+        }
+        JsonData[counter] = data
+    
+    return JsonData
+
 
 # gets all ids to post // maybe we will need this idk
 @app.get("/alert")

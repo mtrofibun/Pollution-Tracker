@@ -14,7 +14,7 @@ const [alertStatus, setAlertStatus] = useState(false)
 const displayAlerts = async () => {
 
     try {
-        const response = await fetch('/sensorData')
+        const response = await fetch('/testing')
         if(response.ok){
             throw new Error(`Response status: ${response.status}`);
             
@@ -44,13 +44,9 @@ return(<>
     {Object.entries(getAlerts).map(([id,response])=>(
         <div> 
             <h3>{getAlerts.name}</h3>
-            <h4>Warning: {getAlerts.severity}</h4>
             <p>Results</p>
             <p>Location: {getAlerts.location}</p>
             <p>Type: {getAlerts.type}</p>
-            <p>Unit: {getAlerts.unit}</p>
-            <p>Status: {getAlerts.status}</p>
-            <p>Value: {getAlerts.value}</p>
             <button>Resolve</button>
         </div>
     ))}

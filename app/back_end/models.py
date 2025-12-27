@@ -11,7 +11,7 @@ class Sensors(Base):
     type = Column(String)
     location = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    
+    selfId = Column(String)
     readings = relationship("SensorReading", back_populates="sensor")
     alerts = relationship("Alert", back_populates="sensor")
 class SensorReadings(Base):
@@ -22,7 +22,7 @@ class SensorReadings(Base):
     value = Column(String)
     colorTemp = Column(Integer)
     flickerRate = Column(Integer)
-    moonVisibility = Column(float) # 0 to 1
+    moonVisibility = Column(Integer) # 0 to 1
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
     sensor = relationship("Sensor", back_populates="readings")
     alerts = relationship("Alert", back_populates="reading")

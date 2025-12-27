@@ -50,6 +50,20 @@ const createSensor = async () => {
   });
 }
 
+const deleteSensor = async (id) => {
+  try{
+    const response = await fetch(`/deleteSensor/${id}`)
+     if(response.ok){
+            throw new Error(`Response status: ${response.status}`);
+            
+        }
+  }
+  catch (error){
+        console.log(error.message);
+    }
+    /* figure a way to remove from the front end */
+}
+
 return(
 <>
 <div class = "text-center">
@@ -109,6 +123,7 @@ return(
       </h3>
       <p>Location: {sensor.location}</p>
       <p>Type: {sensor.type}</p>
+      <button onClick={(deleteSensor(sensor.id))}>Delete Sensor</button>
     </div>
   ))}
 </div>

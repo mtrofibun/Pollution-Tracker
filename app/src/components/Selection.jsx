@@ -9,6 +9,7 @@ const [newSensor, setNewSensor] = useState ({
     name : 'Sensor 1',
     location : 'Park',
     type : 'Temperature',
+    selfID : ''
 })
 const [addNewSensor, setAddNewSensor] = useState(false);
 
@@ -20,13 +21,15 @@ const createSensor = async () => {
     name: newSensor.name,
     location: newSensor.location,
     type: newSensor.type,
+    /* try to use this combo to identify thefront end perhaps or use id see which one works */
+    selfID : f`${newSensor.name}${newSensor.location}${newSensor.type}`
   }
   
   if(newSensor.name && newSensor.location && newSensor.type){
     onAddSelection(entry);
     
     try {
-      const response = await fetch('/sensors', {
+      const response = await fetch('http://localhost:8000/sensors', {
         method: "POST",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(entry)
@@ -47,12 +50,13 @@ const createSensor = async () => {
     name: 'Sensor 1',
     location: 'Park',
     type: 'Temperature',
+    selfID : ''
   });
 }
 
 const deleteSensor = async (id) => {
   try{
-    const response = await fetch(`/deleteSensor/${id}`)
+    const response = await fetch(`http://localhost:8000/deleteSensor/${id}`)
      if(response.ok){
             throw new Error(`Response status: ${response.status}`);
             
@@ -123,7 +127,7 @@ return(
       </h3>
       <p>Location: {sensor.location}</p>
       <p>Type: {sensor.type}</p>
-      <button onClick={(deleteSensor(sensor.id))}>Delete Sensor</button>
+      <button onClick={() => deleteSensor(sensor.id)}>Delete Sensor</button>
     </div>
   ))}
 </div>

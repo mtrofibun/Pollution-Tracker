@@ -14,7 +14,7 @@ const [alertStatus, setAlertStatus] = useState(false)
 const displayAlerts = async () => {
 
     try {
-        const response = await fetch('/testing')
+        const response = await fetch('http://localhost:8000/testing')
         if(response.ok){
             throw new Error(`Response status: ${response.status}`);
             
@@ -35,7 +35,8 @@ return(<>
 <div class = "row border-2 border-[#303641] w-100 h-100vh">
 
 </div>
-<button onClick = {()=>{displayAlerts()
+<button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white" 
+onClick = {()=>{displayAlerts()
     setAlertStatus(true);
 }}>Run Simulation</button>
 

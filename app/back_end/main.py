@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from database import SessionLocal,Base,engine, get_db
 from models import SensorReadings,Sensors,Alert
 from schemas import AlertCreate, SensorReadingCreate, SensorCreate
-import requests,random
+from fastapi.middleware.cors import CORSMiddleware
 
+Base.metadata.drop_all(bind=engine)  
 Base.metadata.create_all(bind=engine)
 
 
@@ -32,6 +33,14 @@ def createAlert(alert : AlertCreate, db : Session = Depends(get_db)):
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"], 
+    allow_credentials=True,
+    allow_methods=["*"], 
+    allow_headers=["*"],  
+)
+
 @app.get("/")
 def reading_from_root():
     return {"Testing"}
@@ -41,7 +50,8 @@ async def addSensor(sensor : SensorCreate, db: Session = Depends(get_db)):
     newSensor = Sensors(
         name = sensor.name,
         location = sensor.location,
-        type = sensor.type
+        type = sensor.type,
+        selfId = sensor.selfId
     )
     
     db.add(newSensor)
@@ -117,7 +127,7 @@ async def deleteSensor(log_id : str, db: Session = Depends(get_db)):
     return "Successfully Deleted"
 
 @app.get("/testingdata")
-async def testing(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+async def testing(db: Session = Depends(get_db)):
     counter = 0
     JsonData = {}
     logs = db.query(Sensors).all()

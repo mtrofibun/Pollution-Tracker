@@ -9,7 +9,7 @@ class SensorCreate(BaseModel):
 
 
 class SensorReadingCreate(BaseModel):
-    value : str
+    value : float
     colorTemp : int
     flickerRate : int
     moonVisibility : float

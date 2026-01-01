@@ -6,7 +6,9 @@ import React, { useState } from 'react';
 function App() {
   const [activeTab, setActiveTab] = useState('simulation');
   const [sensors, setSensors] = useState([]); 
-  
+  const handleDeleteSensor = (id) => {
+  setSensors(prevSensors => prevSensors.filter(sensor => sensor.selfId !== id));
+};
   const handleAddSelection = (newSensor) => {
     setSensors([...sensors, newSensor]);
   };
@@ -33,7 +35,7 @@ function App() {
         </li>
       </ul>
     </div>
-    {activeTab === 'selection' && <Selection sensors={sensors} onAddSelection={handleAddSelection} />}
+    {activeTab === 'selection' && <Selection sensors={sensors} onAddSelection={handleAddSelection} onDeleteSensor={handleDeleteSensor}/>}
     {activeTab === 'simulation' && <Alerts/>}
   </>
 )

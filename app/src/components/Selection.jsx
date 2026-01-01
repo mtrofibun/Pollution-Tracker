@@ -1,32 +1,29 @@
 
-import React,{ useState } from 'react';
-export default function Selection({sensors, onAddSelection}){
-/* TODO: create delete button
-figure out how to remove in frontend and from database
-*/
+import React,{ useState, useRef } from 'react';
+export default function Selection({sensors, onAddSelection, onDeleteSensor}){
 
 const [newSensor, setNewSensor] = useState ({
+    selfId : 0,
     name : 'Sensor 1',
     location : 'Park',
     type : 'Temperature',
-    selfID : ''
 })
 const [addNewSensor, setAddNewSensor] = useState(false);
-
+const sensorRefs = useRef({});
 
 const createSensor = async () => {
   console.log('newSensor:', newSensor); 
   
   const entry = {
+    selfId : crypto.randomUUID(),
     name: newSensor.name,
     location: newSensor.location,
     type: newSensor.type,
-    /* try to use this combo to identify thefront end perhaps or use id see which one works */
-    selfID : f`${newSensor.name}${newSensor.location}${newSensor.type}`
+
   }
   
   if(newSensor.name && newSensor.location && newSensor.type){
-    onAddSelection(entry);
+    
     
     try {
       const response = await fetch('http://localhost:8000/sensors', {
@@ -37,7 +34,7 @@ const createSensor = async () => {
        if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+      onAddSelection(entry);
       const data = await response.json();
       console.log('Sensor created:', data);
     } catch (error) {
@@ -47,31 +44,33 @@ const createSensor = async () => {
   
   setAddNewSensor(false);
   setNewSensor({
+    selfId : 0,
     name: 'Sensor 1',
     location: 'Park',
     type: 'Temperature',
-    selfID : ''
   });
 }
 
 const deleteSensor = async (id) => {
+   
   try{
-    const response = await fetch(`http://localhost:8000/deleteSensor/${id}`)
-     if(response.ok){
+    const response = await fetch(`http://localhost:8000/deleteSensor/${id}`, {method:"DELETE"})
+    
+     if(!response.ok){
             throw new Error(`Response status: ${response.status}`);
-            
+           
         }
+      onDeleteSensor(id);
   }
   catch (error){
         console.log(error.message);
     }
-    /* figure a way to remove from the front end */
 }
 
 return(
 <>
 <div class = "text-center">
-<button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white" onClick = {()=> setAddNewSensor(!addNewSensor)}>Add Sensor</button>
+<button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white m-10" onClick = {()=> setAddNewSensor(!addNewSensor)}>Add Sensor</button>
 </div>
 
 {addNewSensor && (<div class="absolute inset-0 flex items-center justify-center">
@@ -87,7 +86,7 @@ return(
     onChange = {(e) => setNewSensor({...newSensor, name : e.target.value})}
     />
     </div>
-    <div class = "text-zinc-400 p-3 ">
+    <div class = "text-zinc-400 p-3">
         <label>Location</label>
         <select class = "bg-[#303641] p-2 rounded-sm text-[#67707b]" 
          value = {newSensor.location}
@@ -119,15 +118,20 @@ return(
 </div>
 </div>
 </div>)}
-<div className="flex flex-wrap gap-4">
+<div class="flex flex-wrap gap-4">
+  
   {sensors.map(sensor => (
-    <div key={sensor.id} className="bg-[#171d25] border-4 border-[#303641] rounded-sm p-3">
-      <h3 className="border-b-2 border-[#303641] p-2 rounded-sm text-zinc-400 text-center w-64 font-bold text-xl">
+    <div key={sensor.selfId} 
+    ref={el => sensorRefs.current[sensor.selfId] = el}
+    class="bg-[#171d25] border-4 border-[#303641] rounded-sm p-3  text-center">
+      <h3 class="border-b-2 border-[#303641] p-2 rounded-sm text-zinc-400 text-center w-64 font-bold text-xl">
         {sensor.name}
       </h3>
       <p>Location: {sensor.location}</p>
       <p>Type: {sensor.type}</p>
-      <button onClick={() => deleteSensor(sensor.id)}>Delete Sensor</button>
+      <button 
+      class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white m-4"
+      onClick={() => deleteSensor(sensor.selfId)}>Delete Sensor</button>
     </div>
   ))}
 </div>

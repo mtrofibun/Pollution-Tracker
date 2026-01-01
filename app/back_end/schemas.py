@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 class SensorCreate(BaseModel):
+    selfId : str
     name : str
     location : str
     type : str

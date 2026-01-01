@@ -1,4 +1,4 @@
-from fastapi import FastAPI,Depends,BackgroundTasks
+from fastapi import FastAPI,Depends,BackgroundTasks,HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal,Base,engine, get_db
 from models import SensorReadings,Sensors,Alert
@@ -48,10 +48,10 @@ def reading_from_root():
 @app.post("/sensors")
 async def addSensor(sensor : SensorCreate, db: Session = Depends(get_db)):
     newSensor = Sensors(
+        selfId = sensor.selfId,
         name = sensor.name,
         location = sensor.location,
         type = sensor.type,
-        selfId = sensor.selfId
     )
     
     db.add(newSensor)
@@ -121,7 +121,9 @@ async def reset(db: Session = Depends(get_db)):
 
 @app.delete("/deleteSensor/{log_id}")
 async def deleteSensor(log_id : str, db: Session = Depends(get_db)):
-    sensor = db.query(Sensors).filter(Sensors.selfId == log_id)
+    sensor = db.query(Sensors).filter(Sensors.selfId == log_id).first()
+    if sensor is None:
+        raise HTTPException(status_code=404, detail="Sensor not found")
     db.delete(sensor)
     db.commit()
     return "Successfully Deleted"

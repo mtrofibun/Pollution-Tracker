@@ -11,6 +11,20 @@ const [getAlerts,setGetAlerts] = useState({})
 const [alertStatus, setAlertStatus] = useState(false)
 
 
+const changeStatus = async (id) => {
+
+    try {
+        const response = await fetch(`http://localhost:8000/fixedAlert/${id}`)
+        if(response.ok){
+             throw new Error(`Response status: ${response.status}`);
+        }
+    }
+    catch (error){
+        console.log(error.message);
+    }
+
+}
+
 const displayAlerts = async () => {
 
     try {
@@ -43,12 +57,12 @@ onClick = {()=>{displayAlerts()
 {alertStatus && (
     <div>
     {Object.entries(getAlerts).map(([id,response])=>(
-        <div> 
+        <div key = {getAlerts.id}> 
             <h3>{getAlerts.name}</h3>
             <p>Results</p>
             <p>Location: {getAlerts.location}</p>
             <p>Type: {getAlerts.type}</p>
-            <button>Resolve</button>
+            <button onClick = {() => changeStatus(getAlerts.id)}>Resolve</button>
         </div>
     ))}
 

@@ -2,6 +2,7 @@ import './App.css'
 import Selection from './components/Selection';
 import Alerts from "./components/Alerts";
 import React, { useState } from 'react';
+import Heatmap from './components/Heatmap'
 
 function App() {
   const [activeTab, setActiveTab] = useState('simulation');

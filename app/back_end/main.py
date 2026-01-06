@@ -34,14 +34,15 @@ def alertLayout(severity,unit,sensor,logs,):
                 "unit" : unit,
             }
     jsonAlert = {
+                "id" : sensor.id,
                 "name" : sensor.name,
                 "type" : sensor.type,
                 "location" : sensor.location,
                 "unit" : unit,
                 "value" : logs.value,
-                "color type" : logs.colorTemp,
-                "flicker rate" : logs.flickerRate,
-                "moon visiblity" : logs.moonVisibility,
+                "colorType" : logs.colorTemp,
+                "flickerRate" : logs.flickerRate,
+                "moonVisiblity" : logs.moonVisibility,
             }
             
     return alertDataTable,jsonAlert
@@ -57,7 +58,6 @@ def createAlert(alert : AlertCreate, db : Session = Depends(get_db)):
     newAlert = Alert(
         severity = alert.severity,
         unit = alert.unit,
-        selfId = alert.selfId,
         status = "Not Fixed"
         
     )
@@ -133,10 +133,10 @@ async def getReading(background_tasks: BackgroundTasks, db: Session = Depends(ge
 
 
 
-@app.get("/fixedAlert/{id}")
+@app.patch("/fixedAlert/{id}")
 async def fixedAlert(log_id : str, db: Session = Depends(get_db)):
     alert = db.query(Alert).filter(Alert.id == log_id).first()
-    alert.status == "fixed"
+    alert.status = "fixed"
     db.commit()
     db.close()
 
@@ -178,3 +178,17 @@ async def testing(db: Session = Depends(get_db)):
 def getAlert(db : Session = Depends(get_db)):
     alerts = db.query(Alert).all()
     return alerts
+
+@app.patch("/updatelang")
+def updateLang(log_id : str, lang : str, db : Session = Depends(get_db)):
+    sensor = db.query(Sensors).filter(Sensors.id == log_id).first()
+    sensor.latlng = lang
+    db.commit()
+    return "Lang updated"
+
+@app.patch("/deletelang")
+def updateLang(log_id : str, db : Session = Depends(get_db)):
+    sensor = db.query(Sensors).filter(Sensors.id == log_id).first()
+    sensor.latlng = "N/A"
+    db.commit()
+    return "Lang updated to nothing"

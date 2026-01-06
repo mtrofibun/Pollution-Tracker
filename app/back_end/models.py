@@ -11,6 +11,7 @@ class Sensors(Base):
     type = Column(String)
     location = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    latlng = Column(String)
     selfId = Column(String)
     readings = relationship("SensorReadings", back_populates="sensor")
     alerts = relationship("Alert", back_populates="sensor")

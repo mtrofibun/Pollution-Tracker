@@ -93,6 +93,12 @@ async def addSensor(sensor : SensorCreate, db: Session = Depends(get_db)):
     db.refresh(newSensor)
     return newSensor
 
+@app.get("/getSensors")
+async def getSensors(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    allSensors = db.query(Sensors).all()
+    return allSensors
+
+
 @app.get("/sensorData")
 async def getReading(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     counter = 0
@@ -175,19 +181,19 @@ async def testing(db: Session = Depends(get_db)):
 
 # gets all ids to post // maybe we will need this idk
 @app.get("/alert")
-def getAlert(db : Session = Depends(get_db)):
+async def getAlert(db : Session = Depends(get_db)):
     alerts = db.query(Alert).all()
     return alerts
 
 @app.patch("/updatelang")
-def updateLang(log_id : str, lang : str, db : Session = Depends(get_db)):
+async def updateLang(log_id : str, lang : str, db : Session = Depends(get_db)):
     sensor = db.query(Sensors).filter(Sensors.id == log_id).first()
     sensor.latlng = lang
     db.commit()
     return "Lang updated"
 
 @app.patch("/deletelang")
-def updateLang(log_id : str, db : Session = Depends(get_db)):
+async def updateLang(log_id : str, db : Session = Depends(get_db)):
     sensor = db.query(Sensors).filter(Sensors.id == log_id).first()
     sensor.latlng = "N/A"
     db.commit()

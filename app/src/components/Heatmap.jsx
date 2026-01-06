@@ -4,20 +4,46 @@ import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
 
 export default function Heatmap() {
+
+    const placeMarker = async(sensor, ) => {
+      /*save marker send latlang info*/
+    }
     const onMapClick = async(e) => {
-        placement = e.latlng;
-        var popup = L.popup(latlng, {
-            content: `
-    <div>
-      <p>Place Sensor here?</p>
-      <select>
-      /* loop through selection so fetch maybe create api for grabbing names n ids
-      also save latlng into database*/
-      </select>
-      <button onclick="">Submit</button>
-    </div>
-  `
-}).openOn(map);
+      try {
+        const response = await fetch(`http://localhost:8000/getSensors`, {method:"GET"})
+        if(response.ok){
+          const sensors = await response.json();
+          const popupContent = document.createElement('div');
+          const selection = document.createElement('select');
+          const popupButton = document.createElement('button');
+          popupButton.addEventListener("click", placeMarker(){
+
+          });
+          //* how it should look like V
+          `<p>Place <select></select> Sensors at {e.latlng}?</p>
+          <button onClick={() => placeMarker(sensorPicked, e.latlng)}></button>`
+          sensors.forEach(sensor=>{
+            if(sensor.latlng !== 'N/A' || sensor.latlng === null){
+              df = document.createDocumentFragment();
+              var option = document.createElement('option');
+              option.value = `${sensor.name} : ${sensor.selfId}`;
+              option.appendChild(document.createTextNode(`${sensor.name} : ${sensor.selfId}`));
+              df.appendChild(option);
+            }
+            selection.appendChild(df)
+          })
+            popupContent.appendChild(selection);
+            L.popup()
+            .setLatLng(e.latlng)
+            .setContent(popupContent)
+            .openOn(map);
+             throw new Error(`Response status: ${response.status}`);
+        }
+    }
+    catch (error){
+        console.log(error.message);
+    }
+      
     }
 
   const mapRef = useRef(null);
@@ -44,6 +70,14 @@ export default function Heatmap() {
       heatLayerRef.current = L.heatLayer(sensorData, {
         radius: 25,
         blur: 15,
+        maxZoom:17,
+        max:1.0,
+        gradient: {
+          0.0: 'blue',
+          0.5:'lime',
+          0.7:'yellow',
+          1.0:'red'
+        }
       }).addTo(mapRef.current);
     }
   }, [sensorData]);

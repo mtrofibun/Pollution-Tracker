@@ -4,6 +4,9 @@ from database import SessionLocal,Base,engine, get_db
 from models import SensorReadings,Sensors,Alert
 from schemas import AlertCreate, SensorReadingCreate, SensorCreate
 from fastapi.middleware.cors import CORSMiddleware
+#active docker before main app
+#py -m uvicorn main:app --reload 
+
 
 Base.metadata.drop_all(bind=engine)  
 Base.metadata.create_all(bind=engine)
@@ -185,7 +188,7 @@ async def getAlert(db : Session = Depends(get_db)):
     alerts = db.query(Alert).all()
     return alerts
 
-@app.patch("/updatelang")
+@app.patch("/updatelang/{log_id}")
 async def updateLang(log_id : str, lang : str, db : Session = Depends(get_db)):
     sensor = db.query(Sensors).filter(Sensors.id == log_id).first()
     sensor.latlng = lang

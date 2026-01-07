@@ -4,10 +4,7 @@ import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
 
 export default function Heatmap() {
-
-    const placeMarker = async(sensor, ) => {
-      /*save marker send latlang info*/
-    }
+  const sensorMarkers = {};
     const onMapClick = async(e) => {
       try {
         const response = await fetch(`http://localhost:8000/getSensors`, {method:"GET"})
@@ -16,17 +13,25 @@ export default function Heatmap() {
           const popupContent = document.createElement('div');
           const selection = document.createElement('select');
           const popupButton = document.createElement('button');
-          popupButton.addEventListener("click", placeMarker(){
-
+          popupButton.addEventListener("click", async() => {
+           try {
+            const latResponse = await fetch(`http://localhost:8000/updatelang/${selection.value}`, {method:"POST"});
+            if(latResponse.ok){
+                const sensorId = selection.value
+                const marker = L.marker((e.latlng)).addTo(mapRef).bindPopup(`${selection.value}`)
+                sensorMarkers[sensorId] = marker;
+            }
+           }
+           catch(error){
+            console.log(error.message);
+           }
+          
           });
-          //* how it should look like V
-          `<p>Place <select></select> Sensors at {e.latlng}?</p>
-          <button onClick={() => placeMarker(sensorPicked, e.latlng)}></button>`
           sensors.forEach(sensor=>{
-            if(sensor.latlng !== 'N/A' || sensor.latlng === null){
+            if(sensor.latlng !== 'N/A' && sensor.latlng !== null){
               df = document.createDocumentFragment();
               var option = document.createElement('option');
-              option.value = `${sensor.name} : ${sensor.selfId}`;
+              option.value = `${sensor.selfId}`;
               option.appendChild(document.createTextNode(`${sensor.name} : ${sensor.selfId}`));
               df.appendChild(option);
             }
@@ -36,8 +41,8 @@ export default function Heatmap() {
             L.popup()
             .setLatLng(e.latlng)
             .setContent(popupContent)
-            .openOn(map);
-             throw new Error(`Response status: ${response.status}`);
+            .openOn(mapRef);
+          
         }
     }
     catch (error){
@@ -54,13 +59,13 @@ export default function Heatmap() {
     [40.7100, -74.0100, 0.3],
   ]);
 
-  useEffect(() => {
+   useEffect(() => {
     if (!mapRef.current) {
       mapRef.current = L.map('heatmap').setView([40.7128, -74.0060], 20);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapRef.current);
+      mapRef.current.on('click', onMapClick);
     }
   }, []);
-
   useEffect(() => {
     if (mapRef.current) {
       if (heatLayerRef.current) {
@@ -81,6 +86,8 @@ export default function Heatmap() {
       }).addTo(mapRef.current);
     }
   }, [sensorData]);
+
+  
 
   return <div id="heatmap" style={{ height: '500px', width: '100%' }} />;
 }

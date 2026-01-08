@@ -13,12 +13,13 @@ export default function Heatmap() {
           const popupContent = document.createElement('div');
           const selection = document.createElement('select');
           const popupButton = document.createElement('button');
+          popupButton.textContent = 'Submit';
           popupButton.addEventListener("click", async() => {
            try {
             const latResponse = await fetch(`http://localhost:8000/updatelang/${selection.value}`, {method:"POST"});
             if(latResponse.ok){
                 const sensorId = selection.value
-                const marker = L.marker((e.latlng)).addTo(mapRef).bindPopup(`${selection.value}`)
+               const marker = L.marker(e.latlng).addTo(mapRef.current).bindPopup(`${selection.value}`)
                 sensorMarkers[sensorId] = marker;
             }
            }
@@ -27,9 +28,10 @@ export default function Heatmap() {
            }
           
           });
+          
+          var df = document.createDocumentFragment();
           sensors.forEach(sensor=>{
-            if(sensor.latlng !== 'N/A' && sensor.latlng !== null){
-              df = document.createDocumentFragment();
+            if(sensor.latlng !== 'N/A' && sensor.latlng === null){
               var option = document.createElement('option');
               option.value = `${sensor.selfId}`;
               option.appendChild(document.createTextNode(`${sensor.name} : ${sensor.selfId}`));
@@ -37,11 +39,13 @@ export default function Heatmap() {
             }
             selection.appendChild(df)
           })
+          
             popupContent.appendChild(selection);
+            popupContent.appendChild(popupButton);
             L.popup()
             .setLatLng(e.latlng)
             .setContent(popupContent)
-            .openOn(mapRef);
+            .openOn(mapRef.current);
           
         }
     }

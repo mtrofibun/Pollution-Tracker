@@ -16,10 +16,20 @@ export default function Heatmap() {
           popupButton.textContent = 'Submit';
           popupButton.addEventListener("click", async() => {
            try {
-            const latResponse = await fetch(`http://localhost:8000/updatelang/${selection.value}`, {method:"POST"});
+            const sensorValue = selection.value.split(",").map(String);
+            const sensorId = sensorValue[1]
+            const latResponse = await fetch(`http://localhost:8000/updatelang/${sensorId}`, 
+              {method:"PATCH",
+                headers: {
+                'Content-Type': 'application/json'
+                  },
+                body: JSON.stringify({
+              latlng: `${e.latlng.lat},${e.latlng.lng}`
+              })
+
+              });
             if(latResponse.ok){
-                const sensorId = selection.value
-               const marker = L.marker(e.latlng).addTo(mapRef.current).bindPopup(`${selection.value}`)
+               const marker = L.marker(e.latlng).addTo(mapRef.current).bindPopup(`${sensorValue[0]},${sensorValue[2]}`)
                 sensorMarkers[sensorId] = marker;
             }
            }
@@ -33,7 +43,7 @@ export default function Heatmap() {
           sensors.forEach(sensor=>{
             if(sensor.latlng !== 'N/A' && sensor.latlng === null){
               var option = document.createElement('option');
-              option.value = `${sensor.selfId}`;
+              option.value = `${sensor.name},${sensor.selfId},${sensor.type}`;
               option.appendChild(document.createTextNode(`${sensor.name} : ${sensor.selfId}`));
               df.appendChild(option);
             }
@@ -62,7 +72,30 @@ export default function Heatmap() {
     [40.7150, -74.0080, 0.5],
     [40.7100, -74.0100, 0.3],
   ]);
-
+  useEffect( () => {
+    const loadMarkers = async () => {
+      if(!mapRef.current) return;
+      try {
+        const response = await fetch(`http://localhost:8000/getSensors`, {method:"GET"});
+        if(response.ok) {
+          const sensors = await response.json();
+          console.log(sensors);
+          sensors.forEach(sensor =>{
+          if(sensor.latlng !== 'N/A' && sensor.latlng !== null){
+            console.log(sensor);
+            const [lat, lng] = sensor.latlng.split(',').map(Number);
+            L.marker([lat, lng]).addTo(mapRef.current).bindPopup(`${sensor.name}, ${sensor.type}`)
+          }
+        })
+        }
+        
+      }
+      catch(error){
+        console.log(error);
+      }
+    }
+    loadMarkers();
+  },[]);
    useEffect(() => {
     if (!mapRef.current) {
       mapRef.current = L.map('heatmap').setView([40.7128, -74.0060], 20);

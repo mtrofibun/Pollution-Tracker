@@ -1,4 +1,4 @@
-from fastapi import FastAPI,Depends,BackgroundTasks,HTTPException
+from fastapi import FastAPI,Depends,BackgroundTasks,HTTPException, Request
 from sqlalchemy.orm import Session
 from database import SessionLocal,Base,engine, get_db
 from models import SensorReadings,Sensors,Alert
@@ -189,9 +189,10 @@ async def getAlert(db : Session = Depends(get_db)):
     return alerts
 
 @app.patch("/updatelang/{log_id}")
-async def updateLang(log_id : str, lang : str, db : Session = Depends(get_db)):
-    sensor = db.query(Sensors).filter(Sensors.id == log_id).first()
-    sensor.latlng = lang
+async def updateLang(request: Request,log_id : str, db : Session = Depends(get_db)):
+    body = await request.json()
+    sensor = db.query(Sensors).filter(Sensors.selfId == log_id).first()
+    sensor.latlng = body['latlng']
     db.commit()
     return "Lang updated"
 

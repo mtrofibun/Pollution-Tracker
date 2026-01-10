@@ -1,5 +1,5 @@
 
-import React,{ useState, useRef } from 'react';
+import React,{ useState, useRef, useEffect } from 'react';
 export default function Selection({sensors, onAddSelection, onDeleteSensor}){
 
 const [newSensor, setNewSensor] = useState ({
@@ -10,6 +10,10 @@ const [newSensor, setNewSensor] = useState ({
 })
 const [addNewSensor, setAddNewSensor] = useState(false);
 const sensorRefs = useRef({});
+
+useEffect(()=>{
+
+});
 
 const createSensor = async () => {
   console.log('newSensor:', newSensor); 

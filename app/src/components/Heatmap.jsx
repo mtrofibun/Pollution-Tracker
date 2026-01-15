@@ -3,6 +3,22 @@ import L from 'leaflet';
 import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
 
+
+var markerIcon = L.Icon.extend({
+  options : {
+    iconUrl : './src/assets/markers/bluemarker.png',
+    iconSize : [38,38],
+    iconAnchor: [22,22],
+    popupAnchor : [-3,-3]
+  }
+});
+
+var blueMarker = new markerIcon({iconUrl : "./src/assets/markers/bluemarker.png"})
+var redMarker = new markerIcon({iconUrl : "./src/assets/markers/redmarker.png"})
+var yellowMarker = new markerIcon({iconUrl : "./src/assets/markers/yellowmarker.png"})
+
+
+
 export default function Heatmap() {
   const sensorMarkers = {};
     const onMapClick = async(e) => {
@@ -29,7 +45,19 @@ export default function Heatmap() {
 
               });
             if(latResponse.ok){
-               const marker = L.marker(e.latlng).addTo(mapRef.current).bindPopup(`${sensorValue[0]},${sensorValue[2]}`)
+              const markerContent = document.createElement('div');
+              const markerButton = document.createElement('button');
+              const heading = document.createElement('h3');
+              heading.textContent = `${sensorValue[0]},${sensorValue[2]}`
+              markerButton.textContent = 'Reposition';
+              markerButton.addEventListener("click", async()=>{
+               
+                /* call lang api lowkey */
+              })
+              markerContent.appendChild(heading);
+              markerContent.appendChild(markerButton);
+              
+               const marker = L.marker(e.latlng,{icon: blueMarker}).addTo(mapRef.current).bindPopup(markerContent);
                 sensorMarkers[sensorId] = marker;
             }
            }
@@ -84,7 +112,7 @@ export default function Heatmap() {
           if(sensor.latlng !== 'N/A' && sensor.latlng !== null){
             console.log(sensor);
             const [lat, lng] = sensor.latlng.split(',').map(Number);
-            L.marker([lat, lng]).addTo(mapRef.current).bindPopup(`${sensor.name}, ${sensor.type}`)
+            L.marker([lat, lng],{icon: blueMarker}).addTo(mapRef.current).bindPopup(`${sensor.name}, ${sensor.type}`)
           }
         })
         }

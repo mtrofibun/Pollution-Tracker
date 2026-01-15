@@ -17,7 +17,7 @@ criticalPM25 = 150.5
 poorPM10 = 25.0
 criticalPM10 = 54.0
 thresholdCritical = {
-        "temp" : 90, # // value, color temp
+        "temp" : 110, # // value, color temp
         "RGB" : 30, # 30% blue light // flicker rate, color temp, moon visbility
         "lux" : 1, # lux // moonvisbility, value
         "SQM" : 18, # mag/arcsec^2 // moonvisbility, value
@@ -27,6 +27,8 @@ thresholdCritical = {
     }
 
 thresholdAdvisory = {
+    "temp" : 99,
+    
     "PM10" : 25.0,
     "PM25" : 55.5,
 }

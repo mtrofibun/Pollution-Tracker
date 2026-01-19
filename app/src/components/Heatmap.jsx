@@ -7,9 +7,9 @@ import 'leaflet/dist/leaflet.css';
 var markerIcon = L.Icon.extend({
   options : {
     iconUrl : './src/assets/markers/bluemarker.png',
-    iconSize : [38,38],
+    iconSize : [20,20],
     iconAnchor: [22,22],
-    popupAnchor : [-3,-3]
+    popupAnchor : [-9,-9]
   }
 });
 
@@ -51,8 +51,15 @@ export default function Heatmap() {
               heading.textContent = `${sensorValue[0]},${sensorValue[2]}`
               markerButton.textContent = 'Reposition';
               markerButton.addEventListener("click", async()=>{
-               
-                /* call lang api lowkey */
+                try{
+                const clearLat = await fetch(`http://localhost:8000/deletelang/${`${e.latlng.lat},${e.latlng.lng}`}`,
+                  {method : "DELETE"})
+                if(clearLat.ok){
+                  console.log(clearLat.response);
+                }}
+                catch(err){
+                  console.log(err);
+                }
               })
               markerContent.appendChild(heading);
               markerContent.appendChild(markerButton);
@@ -69,7 +76,7 @@ export default function Heatmap() {
           
           var df = document.createDocumentFragment();
           sensors.forEach(sensor=>{
-            if(sensor.latlng !== 'N/A' && sensor.latlng === null){
+            if(sensor.latlng === "N/A" || sensor.latlng === null){
               var option = document.createElement('option');
               option.value = `${sensor.name},${sensor.selfId},${sensor.type}`;
               option.appendChild(document.createTextNode(`${sensor.name} : ${sensor.selfId}`));
@@ -109,11 +116,30 @@ export default function Heatmap() {
           const sensors = await response.json();
           console.log(sensors);
           sensors.forEach(sensor =>{
-          if(sensor.latlng !== 'N/A' && sensor.latlng !== null){
             console.log(sensor);
-            const [lat, lng] = sensor.latlng.split(',').map(Number);
-            L.marker([lat, lng],{icon: blueMarker}).addTo(mapRef.current).bindPopup(`${sensor.name}, ${sensor.type}`)
-          }
+             const [lat, lng] = sensor.latlng.split(',').map(Number);
+            const markerContent = document.createElement('div');
+              const markerButton = document.createElement('button');
+              const heading = document.createElement('h3');
+              heading.textContent = `${sensor.name}, ${sensor.type}`
+              markerButton.textContent = 'Reposition';
+              markerButton.addEventListener("click", async()=>{
+                try{
+                const clearLat = await fetch(`http://localhost:8000/deletelang/${sensor.latlng}`,
+                  {method : "DELETE"})
+                if(clearLat.ok){
+                  console.log(clearLat.response);
+                  mapRef.removeLayer(sensorMarkers[sensor.id])
+                }}
+                catch(err){
+                  console.log(err);
+                }
+              })
+              markerContent.appendChild(heading);
+              markerContent.appendChild(markerButton);
+           
+            L.marker([lat, lng],{icon: blueMarker}).addTo(mapRef.current).bindPopup(markerContent)
+          
         })
         }
         

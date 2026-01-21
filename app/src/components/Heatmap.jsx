@@ -56,6 +56,7 @@ export default function Heatmap() {
                   {method : "DELETE"})
                 if(clearLat.ok){
                   console.log(clearLat.response);
+                  sensorMarkers[sensorId].remove();
                 }}
                 catch(err){
                   console.log(err);
@@ -129,7 +130,7 @@ export default function Heatmap() {
                   {method : "DELETE"})
                 if(clearLat.ok){
                   console.log(clearLat.response);
-                  mapRef.removeLayer(sensorMarkers[sensor.id])
+                  sensorMarkers[sensor.id].remove()
                 }}
                 catch(err){
                   console.log(err);
@@ -137,7 +138,7 @@ export default function Heatmap() {
               })
               markerContent.appendChild(heading);
               markerContent.appendChild(markerButton);
-           
+              
             L.marker([lat, lng],{icon: blueMarker}).addTo(mapRef.current).bindPopup(markerContent)
           
         })
@@ -168,6 +169,7 @@ export default function Heatmap() {
         blur: 15,
         maxZoom:17,
         max:1.0,
+        min:1.0,
         gradient: {
           0.0: 'blue',
           0.5:'lime',

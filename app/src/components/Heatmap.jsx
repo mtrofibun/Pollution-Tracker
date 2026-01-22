@@ -17,10 +17,10 @@ var blueMarker = new markerIcon({iconUrl : "./src/assets/markers/bluemarker.png"
 var redMarker = new markerIcon({iconUrl : "./src/assets/markers/redmarker.png"})
 var yellowMarker = new markerIcon({iconUrl : "./src/assets/markers/yellowmarker.png"})
 
-
+const sensorMarkers = {};
 
 export default function Heatmap() {
-  const sensorMarkers = {};
+  
     const onMapClick = async(e) => {
       try {
         const response = await fetch(`http://localhost:8000/getSensors`, {method:"GET"})
@@ -117,7 +117,10 @@ export default function Heatmap() {
           const sensors = await response.json();
           console.log(sensors);
           sensors.forEach(sensor =>{
-            console.log(sensor);
+            
+            if(sensor.latlng){
+              console.log(sensorMarkers);
+              console.log(sensor.selfId);
              const [lat, lng] = sensor.latlng.split(',').map(Number);
             const markerContent = document.createElement('div');
               const markerButton = document.createElement('button');
@@ -130,7 +133,10 @@ export default function Heatmap() {
                   {method : "DELETE"})
                 if(clearLat.ok){
                   console.log(clearLat.response);
-                  sensorMarkers[sensor.id].remove()
+                  console.log(sensorMarkers);
+                   
+                    sensorMarkers[sensor.selfId].remove();
+                  
                 }}
                 catch(err){
                   console.log(err);
@@ -140,7 +146,7 @@ export default function Heatmap() {
               markerContent.appendChild(markerButton);
               
             L.marker([lat, lng],{icon: blueMarker}).addTo(mapRef.current).bindPopup(markerContent)
-          
+          }
         })
         }
         

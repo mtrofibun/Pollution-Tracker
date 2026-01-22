@@ -201,6 +201,6 @@ async def updateLang(request: Request,log_id : str, db : Session = Depends(get_d
 @app.delete("/deletelang/{lang}")
 async def updateLang(lang : str, db : Session = Depends(get_db)):
     sensor = db.query(Sensors).filter(Sensors.latlng == lang).first()
-    sensor.latlng = "N/A"
+    sensor.latlng = None
     db.commit()
     return "Lang updated to nothing"

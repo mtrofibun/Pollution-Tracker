@@ -110,6 +110,7 @@ export default function Heatmap() {
   ]);
   useEffect( () => {
     const loadMarkers = async () => {
+      
       if(!mapRef.current) return;
       try {
         const response = await fetch(`http://localhost:8000/getSensors`, {method:"GET"});
@@ -132,11 +133,11 @@ export default function Heatmap() {
                 const clearLat = await fetch(`http://localhost:8000/deletelang/${sensor.latlng}`,
                   {method : "DELETE"})
                 if(clearLat.ok){
-                  console.log(clearLat.response);
-                  console.log(sensorMarkers);
-                   
+                  console.log(sensor.selfId);
+                  console.log(sensorMarkers[sensor.selfId]);
+                   /* bug here */
                     sensorMarkers[sensor.selfId].remove();
-                  
+                  delete sensorMarkers[sensor.selfId];
                 }}
                 catch(err){
                   console.log(err);
@@ -145,7 +146,11 @@ export default function Heatmap() {
               markerContent.appendChild(heading);
               markerContent.appendChild(markerButton);
               
-            L.marker([lat, lng],{icon: blueMarker}).addTo(mapRef.current).bindPopup(markerContent)
+            const marker = L.marker([lat, lng], {icon: blueMarker})
+            .addTo(mapRef.current)
+            .bindPopup(markerContent);
+
+        sensorMarkers[sensor.selfId] = marker;
           }
         })
         }

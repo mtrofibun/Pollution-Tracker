@@ -204,3 +204,4 @@ async def updateLang(lang : str, db : Session = Depends(get_db)):
     sensor.latlng = None
     db.commit()
     return "Lang updated to nothing"
+

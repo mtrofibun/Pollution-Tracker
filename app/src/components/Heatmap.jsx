@@ -135,7 +135,7 @@ export default function Heatmap() {
                 if(clearLat.ok){
                   console.log(sensor.selfId);
                   console.log(sensorMarkers[sensor.selfId]);
-                   /* bug here */
+                   
                     sensorMarkers[sensor.selfId].remove();
                   delete sensorMarkers[sensor.selfId];
                 }}

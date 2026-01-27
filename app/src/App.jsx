@@ -13,6 +13,13 @@ function App() {
   const handleAddSelection = (newSensor) => {
     setSensors([...sensors, newSensor]);
   };
+  const handleUpdateSensor = (updatedSensor) => {
+  setSensors(prevSensors => 
+    prevSensors.map(sensor => 
+      sensor.selfId === updatedSensor.selfId ? updatedSensor : sensor
+    )
+  );
+};
 
   return (
   <>
@@ -36,7 +43,10 @@ function App() {
         </li>
       </ul>
     </div>
-    {activeTab === 'selection' && <Selection sensors={sensors} onAddSelection={handleAddSelection} onDeleteSensor={handleDeleteSensor}/>}
+    {activeTab === 'selection' && <Selection sensors={sensors} 
+    onAddSelection={handleAddSelection} 
+    onDeleteSensor={handleDeleteSensor}
+    onUpdateSensor={handleUpdateSensor}/>}
     {activeTab === 'simulation' && <Alerts/>}
   </>
 )

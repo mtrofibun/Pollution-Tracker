@@ -1,11 +1,12 @@
 
 import React,{ useState, useRef, useEffect } from 'react';
-export default function Selection({sensors, onAddSelection, onDeleteSensor}){
+export default function Selection({sensors, onAddSelection, onDeleteSensor, onUpdateSensor}){
 
 const [newSensor, setNewSensor] = useState ({
     selfId : 0,
     name : 'Sensor 1',
     location : 'Park',
+    radius : '20',
     type : 'Temperature',
 })
 const [addNewSensor, setAddNewSensor] = useState(false);
@@ -19,17 +20,33 @@ const createSensor = async () => {
   console.log('newSensor:', newSensor); 
   
   const entry = {
-    selfId : crypto.randomUUID(),
+    selfId : newSensor.selfId || crypto.randomUUID(),
     name: newSensor.name,
     location: newSensor.location,
+    radius: newSensor.radius,
     type: newSensor.type,
 
   }
   
   if(newSensor.name && newSensor.location && newSensor.type){
     
-    
-    try {
+    if(newSensor.selfId){
+      try {const response = await fetch(`https://locathost:8000/sensors${entry.selfId}`, {
+        method: 'PUT',
+         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      })
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      onUpdateSensor(entry);
+    }
+      catch(error) {
+        console.log('Error editing sensor:', error);
+      }
+    }
+    else {
+ try {
       const response = await fetch('http://localhost:8000/sensors', {
         method: "POST",
         headers: { 'Content-Type': 'application/json' },
@@ -44,6 +61,8 @@ const createSensor = async () => {
     } catch (error) {
       console.error('Error creating sensor:', error);
     }
+    }
+   
   }
   
   setAddNewSensor(false);
@@ -69,6 +88,18 @@ const deleteSensor = async (id) => {
   catch (error){
         console.log(error.message);
     }
+}
+
+const editSensor = (sensor) => {
+  setNewSensor({
+    selfId: sensor.selfId,
+    name: sensor.name,  
+    location: sensor.location,
+    radius : sensor.radius,
+    type: sensor.type,
+  });
+  
+  setAddNewSensor(true); 
 }
 
 return(
@@ -113,6 +144,15 @@ return(
             <option>SQM</option>
         </select>
     </div>
+      <div class = "p-3 text-zinc-400">
+    <label><Radius></Radius></label>
+    <input class = "bg-[#303641] p-2 rounded-sm text-[#67707b]" 
+    type = "text"
+    placeholder = "20"
+    value = {newSensor.radius}
+    onChange = {(e) => setNewSensor({...newSensor, radius : e.target.value})}
+    />
+    </div>
     <div class = "text-center"> 
    <button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white mr-9 mt-5" onClick={() => {
   createSensor();
@@ -133,9 +173,11 @@ return(
       </h3>
       <p>Location: {sensor.location}</p>
       <p>Type: {sensor.type}</p>
+      <p>Radius : {sensor.radius}</p>
       <button 
       class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white m-4"
       onClick={() => deleteSensor(sensor.selfId)}>Delete Sensor</button>
+      <button onClick = {() => editSensor(sensor)}>Edit Sensor</button>
     </div>
   ))}
 </div>

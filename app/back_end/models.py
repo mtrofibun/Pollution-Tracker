@@ -13,6 +13,7 @@ class Sensors(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     latlng = Column(String)
     selfId = Column(String)
+    radius = Column(Integer)
     readings = relationship("SensorReadings", back_populates="sensor")
     alerts = relationship("Alert", back_populates="sensor")
 

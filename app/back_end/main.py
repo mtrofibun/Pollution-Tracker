@@ -183,6 +183,10 @@ async def testing(db: Session = Depends(get_db)):
     
     return JsonData
 
+@app.put("/sensors/{entry}")
+async def editSensor(request: Request,entry : str, db : Session = Depends(get_db)):
+    body = await request.json()
+
 
 # gets all ids to post // maybe we will need this idk
 @app.get("/alert")

@@ -1,12 +1,15 @@
 
 import React,{ useState, useRef, useEffect } from 'react';
 export default function Selection({sensors, onAddSelection, onDeleteSensor, onUpdateSensor}){
-
+/* need to fix
+front end showing when a sensor is updated
+add a radius field
+created backend for update */
 const [newSensor, setNewSensor] = useState ({
     selfId : 0,
     name : 'Sensor 1',
     location : 'Park',
-    radius : '20',
+    radius : 20,
     type : 'Temperature',
 })
 const [addNewSensor, setAddNewSensor] = useState(false);
@@ -31,7 +34,7 @@ const createSensor = async () => {
   if(newSensor.name && newSensor.location && newSensor.type){
     
     if(newSensor.selfId){
-      try {const response = await fetch(`https://locathost:8000/sensors${entry.selfId}`, {
+      try {const response = await fetch(`https://locathost:8000/sensors/${entry.selfId}`, {
         method: 'PUT',
          headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(entry)
@@ -40,6 +43,8 @@ const createSensor = async () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       onUpdateSensor(entry);
+       const data = await response.json();
+      console.log('Sensor updated:', data);
     }
       catch(error) {
         console.log('Error editing sensor:', error);
@@ -71,6 +76,7 @@ const createSensor = async () => {
     name: 'Sensor 1',
     location: 'Park',
     type: 'Temperature',
+    radius:20
   });
 }
 
@@ -98,7 +104,7 @@ const editSensor = (sensor) => {
     radius : sensor.radius,
     type: sensor.type,
   });
-  
+  document.getElementById(`${sensor.selfId}`);
   setAddNewSensor(true); 
 }
 
@@ -109,7 +115,7 @@ return(
 </div>
 
 {addNewSensor && (<div class="absolute inset-0 flex items-center justify-center">
-  <div class="w-96 h-83 bg-[#171d25] border-4 border-[#303641] rounded-sm p-3 ">
+  <div class="w-96 h-100 bg-[#171d25] border-4 border-[#303641] rounded-sm p-3 ">
     <div class = "row">
     <h3 class = "border-b-2 border-[#303641] p-2 rounded-sm  text-zinc-400 text-center font-bold text-xl">New Sensor</h3>
     <div class = "p-3 text-zinc-400">
@@ -145,7 +151,7 @@ return(
         </select>
     </div>
       <div class = "p-3 text-zinc-400">
-    <label><Radius></Radius></label>
+    <label>Radius</label>
     <input class = "bg-[#303641] p-2 rounded-sm text-[#67707b]" 
     type = "text"
     placeholder = "20"
@@ -157,7 +163,16 @@ return(
    <button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white mr-9 mt-5" onClick={() => {
   createSensor();
   setAddNewSensor(false);}}>Add Selection</button>
-    <button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white" onClick = {() => setAddNewSensor(false)}>Exit</button>
+    <button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white" onClick = {() => {
+      setAddNewSensor(false);
+      setNewSensor({
+    selfId : 0,
+    name: 'Sensor 1',
+    location: 'Park',
+    type: 'Temperature',
+    radius:20
+  });
+    }}>Exit</button>
 </div>
 </div>
 </div>
@@ -177,7 +192,8 @@ return(
       <button 
       class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white m-4"
       onClick={() => deleteSensor(sensor.selfId)}>Delete Sensor</button>
-      <button onClick = {() => editSensor(sensor)}>Edit Sensor</button>
+      <button onClick = {() => {editSensor(sensor);
+        }}>Edit Sensor</button>
     </div>
   ))}
 </div>

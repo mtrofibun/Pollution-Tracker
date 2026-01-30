@@ -186,6 +186,13 @@ async def testing(db: Session = Depends(get_db)):
 @app.put("/sensors/{entry}")
 async def editSensor(request: Request,entry : str, db : Session = Depends(get_db)):
     body = await request.json()
+    sensor = db.query(Sensors).filter(Sensors.selfId == body['selfId']).first()
+    sensor.name = body["name"]
+    sensor.type = body["type"]
+    sensor.location = body["location"]
+    sensor.radius = body["radius"]
+    db.commit()
+    db.close()
 
 
 # gets all ids to post // maybe we will need this idk

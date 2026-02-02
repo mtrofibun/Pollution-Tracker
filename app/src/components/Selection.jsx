@@ -34,7 +34,7 @@ const createSensor = async () => {
   if(newSensor.name && newSensor.location && newSensor.type){
     
     if(newSensor.selfId){
-      try {const response = await fetch(`https://locathost:8000/sensors/${entry.selfId}`, {
+      try {const response = await fetch(`http://localhost:8000/sensors/${entry.selfId}`, {
         method: 'PUT',
          headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(entry)
@@ -104,7 +104,7 @@ const editSensor = (sensor) => {
     radius : sensor.radius,
     type: sensor.type,
   });
-  document.getElementById(`${sensor.selfId}`);
+  
   setAddNewSensor(true); 
 }
 

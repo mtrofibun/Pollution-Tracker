@@ -1,10 +1,7 @@
 
 import React,{ useState, useRef, useEffect } from 'react';
 export default function Selection({sensors, onAddSelection, onDeleteSensor, onUpdateSensor}){
-/* need to fix
-front end showing when a sensor is updated
-add a radius field
-created backend for update */
+
 const [newSensor, setNewSensor] = useState ({
     selfId : 0,
     name : 'Sensor 1',

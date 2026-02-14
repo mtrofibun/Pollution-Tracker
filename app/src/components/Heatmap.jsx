@@ -146,6 +146,8 @@ export default function Heatmap() {
                 display: flex; 
                 align-items: center; 
                 justify-content: center;
+                width: fit-content;
+                margin-inline: auto; 
               ">
                 <img src="./src/assets/markers/bluemarker.png" style="width: 30px; height: 30px;">
               </div>`,

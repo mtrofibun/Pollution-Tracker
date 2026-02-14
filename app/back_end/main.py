@@ -141,6 +141,48 @@ async def getReading(background_tasks: BackgroundTasks, db: Session = Depends(ge
             sendJson[counter] = jsonAlert
             counter += 1
             createAlert(alertDataTable,db)
+    
+    for logs in Templogs:
+        if logs.value > thresholdCritical["temp"]:
+            sensor = db.query(Sensors).filter(Sensors.id == logs.sensor_id).first()
+            alertDataTable, jsonAlert = alertLayout("critical","F",sensor,logs)
+            sendJson[counter] = jsonAlert
+            counter += 1
+            createAlert(alertDataTable,db)
+        if logs.value > thresholdAdvisory["temp"]:
+            sensor = db.query(Sensors).filter(Sensors.id == logs.sensor_id).first()
+            alertDataTable, jsonAlert = alertLayout("warning","F",sensor,logs)
+            sendJson[counter] = jsonAlert
+            counter += 1
+            createAlert(alertDataTable,db)
+    
+    for logs in Luxlogs:
+        if logs.value > thresholdCritical["lux"]:
+            sensor = db.query(Sensors).filter(Sensors.id == logs.sensor_id).first()
+            alertDataTable, jsonAlert = alertLayout("critical","lux",sensor,logs)
+            sendJson[counter] = jsonAlert
+            counter += 1
+            createAlert(alertDataTable,db)
+        if logs.value > thresholdAdvisory["lux"]:
+            sensor = db.query(Sensors).filter(Sensors.id == logs.sensor_id).first()
+            alertDataTable, jsonAlert = alertLayout("warning","lux",sensor,logs)
+            sendJson[counter] = jsonAlert
+            counter += 1
+            createAlert(alertDataTable,db)
+    
+    for logs in RGBlogs:
+        if logs.value > thresholdCritical["rbg"]:
+            sensor = db.query(Sensors).filter(Sensors.id == logs.sensor_id).first()
+            alertDataTable, jsonAlert = alertLayout("critical","%",sensor,logs)
+            sendJson[counter] = jsonAlert
+            counter += 1
+            createAlert(alertDataTable,db)
+        if logs.value > thresholdAdvisory["rbg"]:
+            sensor = db.query(Sensors).filter(Sensors.id == logs.sensor_id).first()
+            alertDataTable, jsonAlert = alertLayout("warning","%",sensor,logs)
+            sendJson[counter] = jsonAlert
+            counter += 1
+            createAlert(alertDataTable,db)
 
 
 

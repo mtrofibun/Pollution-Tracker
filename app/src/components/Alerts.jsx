@@ -32,7 +32,12 @@ const displayAlerts = async () => {
         const alertsArray = Object.entries(response).map(([id,content]) => ({
                 id, ...content
             }));
-
+        
+        for(let i = 0; i < alertsArray.length; i++){
+            const [sensorlat, sensorlng] = sensor.latlng.split(',').map(Number);
+            let pollution = fetch(`https://www.lightpollutionmap.info/QueryRaster/?ql=wa_2015&qt=point&qd=${sensorlat.latlng.lat},${sensorlng.latlng.lng}`);
+            alertsArray[i][`addedPollution`] = pollution
+        }
         setGetAlerts(alertsArray);
         const result = await response.json();
         console.log(result);

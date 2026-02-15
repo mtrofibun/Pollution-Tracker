@@ -13,6 +13,28 @@ var markerIcon = L.Icon.extend({
   }
 });
 
+const blueIcon = L.divIcon({
+  className: 'custom-icon',
+  html: `<div style="
+    background: rgba(65, 85, 183, 0.5); 
+    border: ${sensor.radius + 30}px solid rgba(65, 85, 183, 0.5);
+    border-radius: 50%; 
+    width: 36px; 
+    height: 36px;
+    box-sizing: border-box;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    width: fit-content;
+    margin-inline: auto; 
+  ">
+    <img src="./src/assets/markers/bluemarker.png" style="width: 30px; height: 30px;">
+  </div>`,
+ iconSize : [20,20],
+    iconAnchor: [22,22],
+    popupAnchor : [-9,-9]
+});
+
 var blueMarker = new markerIcon({iconUrl : "./src/assets/markers/bluemarker.png"})
 var redMarker = new markerIcon({iconUrl : "./src/assets/markers/redmarker.png"})
 var yellowMarker = new markerIcon({iconUrl : "./src/assets/markers/yellowmarker.png"})
@@ -50,14 +72,7 @@ export default function Heatmap() {
               const heading = document.createElement('h3');
               heading.textContent = `${sensorValue[0]},${sensorValue[2]}`
               markerButton.textContent = 'Reposition';
-              const customIcon = L.divIcon({
-                className : 'custom-icon',
-               html:`<img src = "./src/assets/markers/bluemarker.png" style = "background: blue; border-radius: ${sensorValue[3] * 2}px; border: 2px solid white; width: 30px; height: 30px;">`,
-               iconSize : [20,20],
-                iconAnchor: [22,22],
-                popupAnchor : [-9,-9]
 
-              });
               markerButton.addEventListener("click", async()=>{
                 try{
                 const clearLat = await fetch(`http://localhost:8000/deletelang/${`${e.latlng.lat},${e.latlng.lng}`}`,
@@ -73,7 +88,7 @@ export default function Heatmap() {
               markerContent.appendChild(heading);
               markerContent.appendChild(markerButton);
               
-               const marker = L.marker(e.latlng,{icon: customIcon}).addTo(mapRef.current).bindPopup(markerContent);
+               const marker = L.marker(e.latlng,{icon: blueIcon}).addTo(mapRef.current).bindPopup(markerContent);
                 sensorMarkers[sensorId] = marker;
             }
            }
@@ -135,27 +150,7 @@ export default function Heatmap() {
               const markerButton = document.createElement('button');
               const heading = document.createElement('h3');
               heading.textContent = `${sensor.name}, ${sensor.type}`
-               const customIcon = L.divIcon({
-                className : 'custom-icon',
-               html: `<div style="
-                background: rgba(65, 85, 183, 0.5); 
-                border: ${sensor.radius + 30}px solid rgba(65, 85, 183, 0.5);
-                border-radius: 50%; 
-                width: 36px; 
-                height: 36px; 
-                display: flex; 
-                align-items: center; 
-                justify-content: center;
-                width: fit-content;
-                margin-inline: auto; 
-              ">
-                <img src="./src/assets/markers/bluemarker.png" style="width: 30px; height: 30px;">
-              </div>`,
-               iconSize: [20, 20],
-                iconAnchor: [10, 10],
-                popupAnchor: [10, -20]
-
-              });
+               
               markerButton.textContent = 'Reposition';
               markerButton.addEventListener("click", async()=>{
                 try{
@@ -175,7 +170,7 @@ export default function Heatmap() {
               markerContent.appendChild(heading);
               markerContent.appendChild(markerButton);
               
-            const marker = L.marker([lat, lng], {icon: customIcon})
+            const marker = L.marker([lat, lng], {icon: blueIcon})
             .addTo(mapRef.current)
             .bindPopup(markerContent);
 
@@ -195,6 +190,13 @@ export default function Heatmap() {
     if (!mapRef.current) {
       mapRef.current = L.map('heatmap').setView([40.7128, -74.0060], 20);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapRef.current);
+      
+      L.tileLayer('https://tiles.lightpollutionmap.info/tiles/VIIRS_2022/{z}/{x}/{y}.png', {
+        attribution: '© lightpollutionmap.info',
+        maxZoom: 19,
+        opacity: 0.6
+      }).addTo(mapRef.current);
+      
       mapRef.current.on('click', onMapClick);
     }
   }, []);

@@ -3,7 +3,11 @@ import L from 'leaflet';
 import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
 
-/* fix marker anchor */
+/* save map coords and reapply them when going back
+or 
+have a little slide box for sensors and alarms?*/
+
+
 var markerIcon = L.Icon.extend({
   options : {
     iconUrl : './src/assets/markers/bluemarker.png',
@@ -188,14 +192,16 @@ export default function Heatmap() {
   },[]);
    useEffect(() => {
     if (!mapRef.current) {
-      mapRef.current = L.map('heatmap').setView([40.7128, -74.0060], 20);
+      mapRef.current = L.map('heatmap').setView([40.7128, -74.0060], 18);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapRef.current);
-      
-     /* Fix this */  L.tileLayer('https://www.lightpollutionmap.info/tiles/wa_2022/{z}/{x}/{y}.png', {
-      attribution: '© lightpollutionmap.info',
-      maxZoom: 19,
-      opacity: 0.6
-    }).addTo(mapRef.current);
+      /* https://lightpollutionmap.app/api/lightpollution?lat=34.67387626588273&lon=-82.24291625573528 */
+      /*L.tileLayer('https://djlorenz.github.io/astronomy/image_tiles/tiles2024/tile_{x}_{y}_{z}.png', {
+      attribution: '© David Lorenz - Light Pollution Atlas',
+      maxZoom: 8, 
+      minZoom: 1,
+      opacity: 0.6,
+      tms: false
+    }).addTo(mapRef.current);*/
       
       mapRef.current.on('click', onMapClick);
     }
@@ -224,5 +230,5 @@ export default function Heatmap() {
 
   
 
-  return <div id="heatmap" style={{ height: '500px', width: '100%' }} />;
+  return <div id="heatmap" class = "relative w-full h-screen z-1 overflow-hidden"  />;
 }

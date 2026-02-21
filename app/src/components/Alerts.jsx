@@ -35,8 +35,8 @@ const displayAlerts = async () => {
         
         for(let i = 0; i < alertsArray.length; i++){
             const [sensorlat, sensorlng] = sensor.latlng.split(',').map(Number);
-            let pollution = fetch(`https://www.lightpollutionmap.info/QueryRaster/?ql=wa_2015&qt=point&qd=${sensorlat.latlng.lat},${sensorlng.latlng.lng}`);
-            alertsArray[i][`addedPollution`] = pollution
+            let pollution = fetch(`https://lightpollutionmap.app/api/lightpollution?lat=${sensorlat.latlng.lat}&lon=${sensorlng.latlng.lng}`);
+            alertsArray[i][`addedPollution`] = pollution['brightness']['mpsas'];
         }
         setGetAlerts(alertsArray);
         const result = await response.json();
@@ -47,7 +47,7 @@ const displayAlerts = async () => {
 }
 
 return(<>
-<div class = "row border-2 border-[#303641] w-100 h-100vh">
+<div class = "row border-2 border-[#303641] w-300 h-100%">
  <Heatmap />
 </div>
 <button class = "bg-gradient-to-r from-sky-400 to-blue-600 text-white"

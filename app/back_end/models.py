@@ -26,6 +26,7 @@ class SensorReadings(Base):
     flickerRate = Column(Integer)
     moonVisibility = Column(Float)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    pollutionAlready = Column(String)
     sensor = relationship("Sensors", back_populates="readings") 
     alerts = relationship("Alert", back_populates="reading")
 
